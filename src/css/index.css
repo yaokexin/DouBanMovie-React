@@ -1,0 +1,16 @@
+.ant-layout-header .logo {
+    width: 120px;
+    height: 31px;
+    background: #fff;
+    margin: 16px 28px 16px 0;
+    float: left;
+
+    background-image: url(../images/logo.jpg);
+    background-size:cover
+}
+#app {
+    height: 100%;
+}
+.layout{
+    height: 100%;
+}
