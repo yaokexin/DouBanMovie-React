@@ -52,7 +52,7 @@ export default class MovieDetail extends React.Component{
                             data.casts.map(item =>{
                                 return(
                                     <li key={item.id} style={{ textAlign: 'center', marginRight: 20 }}>
-                                        <img src={item.avatars.small} alt={item.alt}/>
+                                        <img src={item.avatars.small} alt={item.alt} width="100px"/>
                                         <p>{item.name}</p>
                                     </li>
                                 )
