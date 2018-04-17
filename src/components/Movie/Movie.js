@@ -1,7 +1,7 @@
 import React from  'react'
 
 //antd中的加载组件
-import { Spin, Alert } from 'antd';
+import { Spin, Alert, Pagination  } from 'antd';
 //card 组件
 import { Card } from 'antd';
 const { Meta } = Card;
@@ -35,44 +35,58 @@ export default class Movie extends  React.Component{
                 </Spin>
             )
         }
+
+        var curpge = this.props.match.params.page ? this.props.match.params.page-0:1
         return(
-            <div style={{ display: 'flex' ,flexWrap: 'wrap'}}>
-                {
-                    this.state.moviedata.subjects.map(item=>{
-                        return(
-                            <Card style={{textAlign:"center",width:200,margin:'0 20px 20px 0'}} bodyStyle={{padding:'10px 0'}} 
-                            onClick = {()=>{this.getDetail(item.id)}}
-                            key=""> 
-                                <div className="custom-image">
-                                    <img alt="example" width="100" height="150" src={item.images.small} />
-                                </div>
-                                <div className="custom-card">
-                                    <h3>
-                                        {item.title}
-                                    </h3>
-                                    <p>
-                                        电影类型:{item.genres.join(',')}    
-                                    </p>
-                                    <p>
-                                        上映年份:{item.year}    
-                                    </p>
-                                    < Rate disabled allowHalf defaultValue = {
-                                        (item.rating.stars) / 10
-                                    }
-                                    />
-                                </div>
-                            </Card>
-                        )
-                    })
-                }
+            <div>
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                    {
+                        this.state.moviedata.subjects.map(item => {
+                            return (
+                                <Card style={{ textAlign: "center", width: 200, margin: '0 20px 20px 0' }} bodyStyle={{ padding: '10px 0' }}
+                                    onClick={() => { this.getDetail(item.id) }}
+                                    key={item.id}>
+                                    <div className="custom-image">
+                                        <img alt="example" width="100" height="150" src={item.images.small} />
+                                    </div>
+                                    <div className="custom-card">
+                                        <h3>
+                                            {item.title}
+                                        </h3>
+                                        <p>
+                                            电影类型:{item.genres.join(',')}
+                                        </p>
+                                        <p>
+                                            上映年份:{item.year}
+                                        </p>
+                                        < Rate disabled allowHalf defaultValue={
+                                            (item.rating.stars) / 10
+                                        }
+                                        />
+                                    </div>
+                                </Card>
+                            )
+                        })
+                    }
+                </div>
+                <Pagination current={curpge} total={50} pageSize={6} onChange={(page, pageSize) => { this.goPage(page, pageSize)}}/>
             </div>
+          
         )
         
     }
+    goPage(page, pageSize){
+        console.log(page, pageSize)
+        //编程导航
+        console.log(this.props.match.params.movietype)
+        const movietype = this.props.match.params.movietype
+        this.props.history.push(`/movielist/${movietype}/${page}`)
+    }
+
 
     //跳转到详情页面
     getDetail(id){
-        this.props.history.push('/movie/moviedetail/'+id)
+        this.props.history.push('/movielist/moviedetail/'+id)
     }
 
     //发送请求
@@ -89,16 +103,19 @@ export default class Movie extends  React.Component{
         //该钩子函数 在props改变时触发
         console.log('componentWillReceiveProps', nextProps.match.params.movietype);
         const url = `api/movie/${nextProps.match.params.movietype}`
-        this.fetchMovie(url)
+        this.fetchMovie(url,nextProps.match.params.page)
     }
 
 
     //封装 fetch获数据
-    fetchMovie(url){
+    fetchMovie(url,page=1,count=6){
         this.setState({
             isloading:true
         })
-        fetch(url)
+        // const page = this.props.match.params.page
+        //计算开始 值
+        const start  = (page-1)*count
+        fetch(`${url}?start=${start}&count=${count}`)
             .then(function (response) {
                 //将相应数据 转化为json对象  返回一个promise对象
                 return response.json()
